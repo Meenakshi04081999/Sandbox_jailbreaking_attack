@@ -1,7 +1,14 @@
 import requests
+from transformers import pipeline
 
-Ollama_url = "http://localhost:11434/api/generate"
-Model = "llama3"
+#Ollama_url = "http://localhost:11434/api/generate"
+Model = "mistralai/Mistral-7B-Instruct-v0.2"
+
+pipe = pipeline(
+    "text-generation",
+    model=Model,
+    device_map="auto"
+)
 
 System_rules = """
 You are a helpful assistant.
@@ -16,13 +23,11 @@ def query_llama (user_input):
     
     prompt = build_prompt(user_input)
     
-    response = requests.post(
-        Ollama_url,
-        json= {
-            "model" : Model,
-            "prompt" : prompt,
-            "stream" : False # wait for full response - True - token by token response
-        }
+    result = pipe(
+        prompt,
+        max_new_tokens=200,
+        do_sample=True,
+        temperature=0.7
     )
     
-    return response.json()["response"]
+    return result[0]["generated_text"]
