@@ -21,7 +21,10 @@ from pathlib import Path
 from teacher import Teacher
 
 
-def collect(prompts, out="labels.jsonl", debug_out="labels_debug.jsonl", budget=None):
+def collect(prompts, out="labels.jsonl", debug_out=None, budget=None):
+    if debug_out is None:
+        p = Path(out)
+        debug_out = str(p.with_name(p.stem + "_debug" + p.suffix))
     teacher = Teacher()
     out_p, dbg_p = Path(out), Path(debug_out)
     n = 0
